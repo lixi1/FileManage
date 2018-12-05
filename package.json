@@ -1,0 +1,12 @@
+{
+    "devDependencies": {
+        "express": "^4.16.4",
+        "mysql": "2.6.2"
+    },
+    "dependencies": {
+        "body-parser": "^1.18.3",
+        "cors": "^2.8.5",
+        "node-uuid": "^1.4.8",
+        "sequelize": "^4.41.2"
+    }
+}
