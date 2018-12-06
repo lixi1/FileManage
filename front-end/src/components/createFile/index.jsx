@@ -4,8 +4,20 @@ import { withRouter } from 'react-router';
 import { Input, Form, Button } from 'antd';
 import {observer, inject} from 'mobx-react';
 import BraftEditor from 'braft-editor'
+import Table from 'braft-extensions/dist/table'
+import CodeHighlighter from 'braft-extensions/dist/code-highlighter';
 import './index.less';
 import 'braft-editor/dist/index.css'
+import 'braft-extensions/dist/table.css'
+import 'braft-extensions/dist/code-highlighter.css'
+
+BraftEditor.use(Table({
+    defaultColumns: 3, 
+    defaultRows: 3,
+}))
+
+BraftEditor.use(CodeHighlighter())
+
 
 const FormItem = Form.Item;
 
@@ -56,17 +68,7 @@ export default class CreateFile extends Component {
         } = this.props;
         form.validateFields((error, values) => {
             if(!error){
-                const submitData = {
-                    title: values.title,
-                    content: values.content.toHTML(true),
-                    id: detailContent ? detailContent.id : null
-                }
-                const callback = () => {
-                    sideMenuStore.loadSideMenu();
-                    router.push(detailContent ? `/detail/${detailContent.id}` : "/");
-                }
-
-                detailContent ? createStore.updateFile(submitData, callback) : createStore.saveFile(submitData, callback)
+                this.submitContent()
             }else{
                 return;
             }
@@ -82,6 +84,31 @@ export default class CreateFile extends Component {
         this.props.router.push(detailContent ? `/detail/${detailContent.id}` : "/");
     }
 
+    // ctr + s时调用
+    submitContent = (data) => {
+        const {
+            router,
+            detailContent,
+            form,
+            createStore,
+            sideMenuStore
+        } = this.props;
+
+        const callback = () => {
+            sideMenuStore.loadSideMenu();
+            router.push(detailContent ? `/detail/${detailContent.id}` : "/");
+        }
+
+        const submitData = {
+            title: form.getFieldValue("title"),
+            content: form.getFieldValue("content").toHTML(),
+            id: detailContent ? detailContent.id : null
+        }
+
+        detailContent ? createStore.updateFile(submitData, callback) : createStore.saveFile(submitData, callback)
+
+    }
+
     render() {
         
         const {
@@ -93,13 +120,16 @@ export default class CreateFile extends Component {
         } = this.props;
 
         const controls = [
+            'font-size',
             'bold',
             'italic',
             'underline',
             'text-color',
+            'media',
             'separator',
             'link',
-            'media'
+            'code',
+            'blockquote'
         ];
 
         const formItemLayout={
@@ -110,6 +140,12 @@ export default class CreateFile extends Component {
                 span: 21,
             }
         }
+
+        BraftEditor.use(Table({
+            includeEditors: ['editor-with-table'],
+            defaultColumns: 5,
+            defaultRows: 3
+        }))
 
         return (
             <div className="createFile">
@@ -144,16 +180,16 @@ export default class CreateFile extends Component {
                                  initialValue:  BraftEditor.createEditorState(detailContent ? detailContent.content : null)
                              })(
                                 <BraftEditor
-                                    controls={controls}
+                                    id="editor-with-extensions"
                                     className="content-editor"
                                     placeholder="请输入文章内容！"
+                                    onSave={this.submitContent}
                                 />
                              )
                          }
                     </FormItem>
                     <FormItem 
                         wrapperCol={{span: 21, offset: 2}}
-                    
                     >
                         <Button size="large" type="primary" htmlType="submit">保存</Button>
                         <Button size="large" onClick={this.handleCancel}>取消</Button>

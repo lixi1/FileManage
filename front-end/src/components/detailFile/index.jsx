@@ -6,6 +6,9 @@ import { withRouter } from 'react-router'
 import { observer, inject } from 'mobx-react';
 import {toJS} from "mobx"
 import './index.less'
+import 'braft-editor/dist/index.css'
+import 'braft-extensions/dist/table.css'
+import 'braft-extensions/dist/code-highlighter.css'
 
 const { Header, Content } = Layout;
 
