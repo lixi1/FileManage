@@ -20,13 +20,12 @@ BraftEditor.use(Table({
 
 BraftEditor.use(CodeHighlighter())
 
-
 const FormItem = Form.Item;
 
 @withRouter
 @inject('createStore', 'sideMenuStore', 'detailStore')
-@observer
 @Form.create()
+@observer
 export default class CreateFile extends Component {
     constructor(props) {
         super(props);
@@ -34,44 +33,29 @@ export default class CreateFile extends Component {
 
     componentWillMount() {
         this.props.createStore.reset();
-        console.log(2222,this.props.params.fileId)
+        const {
+            detailContent
+        } = this.props.detailStore
         if(this.props.params.fileId){
             this.props.detailStore.getFileDetail(this.props.params.fileId)
+                .then(() => {
+                    this.props.form.setFieldsValue({
+                        content: BraftEditor.createEditorState(this.props.detailStore.detailContent.content)
+                    })
+                })
         }
     }
 
     componentDidMount() {
         this.props.router.setRouteLeaveHook(
             this.props.route, 
-            this.routerWillLeave.bind(this)
+            this.routerWillLeave
         )
     }
-    routerWillLeave() {
+    routerWillLeave = () => {
         if(!this.props.createStore.isSave){
             return "编辑的内容还没有保存, 确认要离开？";
         }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if(nextProps.params.fileId !== this.props.params.fileId){
-            nextProps.detailStore.getFileDetail(nextProps.params.fileId)
-        }
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return true;
-    }
-
-    componentWillUpdate(nextProps, nextState) {
-
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-
-    }
-
-    componentWillUnmount() {
-
     }
 
     handleSubmit = (event) => {
@@ -120,9 +104,7 @@ export default class CreateFile extends Component {
             content: form.getFieldValue("content").toHTML(),
             id: detailContent ? detailContent.id : null
         }
-
         detailContent ? createStore.updateFile(submitData, callback) : createStore.saveFile(submitData, callback)
-
     }
 
     render() {
@@ -143,7 +125,9 @@ export default class CreateFile extends Component {
             'blockquote'
         ];
         const {
-            detailContent
+            detailContent,
+            title,
+            content
         } = this.props.detailStore;
         
         const formItemLayout={
@@ -160,8 +144,7 @@ export default class CreateFile extends Component {
             defaultColumns: 5,
             defaultRows: 3
         }))
-        console.log(222, this.props.detailStore, toJS(this.props.detailStore.detailContent))
-        const isEdit = Object.keys(detailContent).length > 0 
+        const isEdit = Object.keys(detailContent).length > 0;
         return (
             <div className="createFile">
                 <BreadCrumb pathname={this.props.location.pathname} title={isEdit ? detailContent.title : ""}/>
@@ -193,7 +176,7 @@ export default class CreateFile extends Component {
                                         }
                                     }
                                  }],
-                                 initialValue:  BraftEditor.createEditorState(isEdit ? detailContent.content : null)
+                                 initialValue: BraftEditor.createEditorState(isEdit ? detailContent.content : null)
                              })(
                                 <BraftEditor
                                     id="editor-with-extensions"

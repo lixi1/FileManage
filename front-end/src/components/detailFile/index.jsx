@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import BreadCrumb from '../breadCrumb/index'
-import { Layout, Button } from 'antd';
+import { Layout, Button, Modal } from 'antd';
 import { withRouter } from 'react-router'
 import { observer, inject } from 'mobx-react';
 import {toJS} from "mobx"
@@ -62,7 +62,6 @@ class DetailFile extends Component {
         const {
             detailContent
         } = detailStore;
-        console.log(222, this.props.detailStore, toJS(this.props.detailStore.detailContent))
         return (
             <Layout className="detail">
                 <BreadCrumb pathname={location.pathname} title={detailContent.title}/>
@@ -70,12 +69,19 @@ class DetailFile extends Component {
                     <h2>{detailContent.title}</h2>
                     <div className="btnGroup">
                         <Button type="primary" onClick={() => {
-                            console.log(params)
                             router.push(`/detail/${params.fileId}/edit`)
                         }}>编辑</Button>
                         <Button onClick={() => {
-                            sideMenuStore.deleteFile({id: params.fileId})
-                            router.push('/')
+                            Modal.confirm({
+                                title: `是否确定要删除${detailContent.title}?`,
+                                className: "delModal",
+                                okText: "确定",
+                                cancelText: "取消",
+                                onOk() {
+                                    sideMenuStore.deleteFile({id: params.fileId})
+                                    router.push('/')
+                                }
+                            })
                         }}>删除</Button>
                     </div>
                     
