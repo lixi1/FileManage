@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import CreateFile from '../createFile/index';
 import BreadCrumb from '../breadCrumb/index';
 import { withRouter } from 'react-router'
+import { inject } from 'mobx-react';
 
 @withRouter
+@inject("detailStore")
 class EditFile extends Component {
     constructor(props) {
         super(props);
@@ -39,11 +41,11 @@ class EditFile extends Component {
     }
 
     render() {
-        const { location} = this.props;
+        const { detailContent} = this.props.detailStore;
         return (
             <div>
-                <BreadCrumb pathname={location.pathname} title={location.state.detailContent.title}/>
-                <CreateFile detailContent={location.state.detailContent} router={this.props.router}/>
+                <BreadCrumb pathname={location.pathname} title={detailContent.title}/>
+                <CreateFile detailContent={detailContent} router={this.props.router}/>
             </div>
         );
     }

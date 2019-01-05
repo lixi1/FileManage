@@ -102,9 +102,7 @@ class SideMenu extends Component {
                 <Button type="primary" onClick={() => {
                     this.props.router.push('/create');
                 }}>新建文件</Button>
-                <Tree 
-                    loadData={loadSideMenu}
-                >
+                <Tree>
                     {
                         this.renderTreeNodes(sideList)}
                 </Tree>

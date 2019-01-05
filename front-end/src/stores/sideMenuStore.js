@@ -22,15 +22,22 @@ class SideMenuStore {
                             res.data
                     ];
                     this.sideList = [...this.sideList]
-                }else{
-                    this.sideList = res.data.map((item, index) => {
-                        return item
-                    })
                 }
-                this.sideList = this.sideList.map((item, index) => {
+                let sideList = [
+                    {id: "本地监控", title: "本地监控", children: []},
+                    {id: "远程监控", title: "远程监控", children: []},
+                ]
+                res.data.forEach((item, index) => {
                      item.isLeaf = item.childIdList && item.childIdList.length > 0 ? false: true;
-                     return item;
+                     if(item.title.indexOf("本地监控") > -1){
+                        sideList[0].children.push(item)
+                     }else if(item.title.indexOf("远程监控") > -1){
+                        sideList[1].children.push(item)
+                    }else {
+                        sideList.push(item);
+                    }
                 })
+                this.sideList = sideList;
             })
     }
 

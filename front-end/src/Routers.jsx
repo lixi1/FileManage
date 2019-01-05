@@ -10,7 +10,7 @@ const Routes = (
         <Route path="/" component={MainLayout}>
             <Route path="/create" component={CreateFile} />
             <Route path="/detail/:fileId" component={DetailFile}/>
-            <Route path="/detail/:fileId/edit" component={EditFile}/>
+            <Route path="/detail/:fileId/edit" component={CreateFile}/>
         </Route>
 
     </Route>

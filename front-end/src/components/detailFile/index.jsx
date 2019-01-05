@@ -31,7 +31,6 @@ class DetailFile extends Component {
 
     componentWillReceiveProps(nextProps) {
         if(nextProps.params.fileId !== this.props.params.fileId){
-            debugger
             nextProps.detailStore.getFileDetail(nextProps.params.fileId)
         }
     }
@@ -63,16 +62,16 @@ class DetailFile extends Component {
         const {
             detailContent
         } = detailStore;
-
+        console.log(222, this.props.detailStore, toJS(this.props.detailStore.detailContent))
         return (
             <Layout className="detail">
                 <BreadCrumb pathname={location.pathname} title={detailContent.title}/>
                 <Header>
-                    
                     <h2>{detailContent.title}</h2>
                     <div className="btnGroup">
                         <Button type="primary" onClick={() => {
-                            router.push({pathname: `/detail/${params.fileId}/edit`, state: {detailContent:detailContent}})
+                            console.log(params)
+                            router.push(`/detail/${params.fileId}/edit`)
                         }}>编辑</Button>
                         <Button onClick={() => {
                             sideMenuStore.deleteFile({id: params.fileId})

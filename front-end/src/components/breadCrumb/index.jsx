@@ -7,6 +7,7 @@ import './index.less'
 
 const breadCrumbItemMaps = {
     '/detail': "详情",
+    '/create': "新增"
 }
 
 const BreadCrumb = withRouter(

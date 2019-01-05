@@ -4,8 +4,6 @@ import axios from 'axios'
 import qs from 'qs';
 
 class DetailStore {
-    @observable title = "";
-    @observable content = "";
     @observable detailContent = {}
     
     @action

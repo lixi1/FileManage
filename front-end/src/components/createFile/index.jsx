@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import { Input, Form, Button } from 'antd';
 import {observer, inject} from 'mobx-react';
+import {toJS} from 'mobx'
+import BreadCrumb from '../breadCrumb';
 import BraftEditor from 'braft-editor'
 import Table from 'braft-extensions/dist/table'
 import CodeHighlighter from 'braft-extensions/dist/code-highlighter';
@@ -22,7 +24,7 @@ BraftEditor.use(CodeHighlighter())
 const FormItem = Form.Item;
 
 @withRouter
-@inject('createStore', 'sideMenuStore')
+@inject('createStore', 'sideMenuStore', 'detailStore')
 @observer
 @Form.create()
 export default class CreateFile extends Component {
@@ -31,14 +33,29 @@ export default class CreateFile extends Component {
     }
 
     componentWillMount() {
+        this.props.createStore.reset();
+        console.log(2222,this.props.params.fileId)
+        if(this.props.params.fileId){
+            this.props.detailStore.getFileDetail(this.props.params.fileId)
+        }
     }
 
     componentDidMount() {
-
+        this.props.router.setRouteLeaveHook(
+            this.props.route, 
+            this.routerWillLeave.bind(this)
+        )
+    }
+    routerWillLeave() {
+        if(!this.props.createStore.isSave){
+            return "编辑的内容还没有保存, 确认要离开？";
+        }
     }
 
     componentWillReceiveProps(nextProps) {
-
+        if(nextProps.params.fileId !== this.props.params.fileId){
+            nextProps.detailStore.getFileDetail(nextProps.params.fileId)
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -61,7 +78,6 @@ export default class CreateFile extends Component {
         event.preventDefault();
         const {
             router,
-            detailContent,
             form,
             createStore,
             sideMenuStore
@@ -78,9 +94,9 @@ export default class CreateFile extends Component {
     handleCancel = (event) => {
         event.preventDefault();
         const {
-            router,
             detailContent
-        } = this.props;
+        } = this.props.detailStore;
+        this.props.createStore.cancelFile();
         this.props.router.push(detailContent ? `/detail/${detailContent.id}` : "/");
     }
 
@@ -110,14 +126,9 @@ export default class CreateFile extends Component {
     }
 
     render() {
-        
         const {
             getFieldDecorator
         } = this.props.form;
-
-        const { 
-            detailContent 
-        } = this.props;
 
         const controls = [
             'font-size',
@@ -131,7 +142,10 @@ export default class CreateFile extends Component {
             'code',
             'blockquote'
         ];
-
+        const {
+            detailContent
+        } = this.props.detailStore;
+        
         const formItemLayout={
             labelCol: {
                 span: 2
@@ -146,9 +160,11 @@ export default class CreateFile extends Component {
             defaultColumns: 5,
             defaultRows: 3
         }))
-
+        console.log(222, this.props.detailStore, toJS(this.props.detailStore.detailContent))
+        const isEdit = Object.keys(detailContent).length > 0 
         return (
             <div className="createFile">
+                <BreadCrumb pathname={this.props.location.pathname} title={isEdit ? detailContent.title : ""}/>
                 <Form onSubmit={this.handleSubmit}>
                     <FormItem label="文章标题" {...formItemLayout}>
                         {
@@ -157,7 +173,7 @@ export default class CreateFile extends Component {
                                     required: true,
                                     message: "请输入标题！"
                                 }],
-                                initialValue: detailContent ? detailContent.title : ""
+                                initialValue: isEdit ? detailContent.title : ""
                             })(
                                 <Input size="large" placeholder="请输入标题！"/>
                             )
@@ -177,7 +193,7 @@ export default class CreateFile extends Component {
                                         }
                                     }
                                  }],
-                                 initialValue:  BraftEditor.createEditorState(detailContent ? detailContent.content : null)
+                                 initialValue:  BraftEditor.createEditorState(isEdit ? detailContent.content : null)
                              })(
                                 <BraftEditor
                                     id="editor-with-extensions"

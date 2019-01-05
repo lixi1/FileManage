@@ -18,7 +18,10 @@ var connection = mysql.createConnection({
 
 connection.connect();
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '500mb'}));
+app.use(bodyParser.urlencoded({limit: '500mb', extended: false}));
+
+// app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 // app.all('*', function(req, res, next) {
@@ -35,8 +38,8 @@ app.use(cors());
 // 根据ID查询文章
 app.get('/getFile', function(req, res, next) {
     const query = req.query.id ? 
-        `SELECT * from FileList where id = '${req.query.id}'`
-        :'SELECT * from FileList'
+        `SELECT * from agentlists where id = '${req.query.id}'`
+        :'SELECT * from agentlists'
 
     connection.query(query, function (error, results, fields) {
         if (error) {
@@ -49,8 +52,8 @@ app.get('/getFile', function(req, res, next) {
 
 // 添加文章
 app.post('/addFile', function(req, res, next) {
-    const query = `INSERT INTO FileList (id, title, hasParent, content)
-        values ('${uuid.v1().replace(/-/g,"")}', '${req.body.title}', 0, '${req.body.content}');`
+    const query = `INSERT INTO agentlists (id, title, content)
+        values ('${uuid.v1().replace(/-/g,"")}', '${req.body.title}','${req.body.content}');`
     connection.query(query, function (error, results, fields) {
         if (error) {
             next(error)
@@ -61,7 +64,7 @@ app.post('/addFile', function(req, res, next) {
 })
 
 app.post('/updateFile', function(req, res, next) {
-    const query = `UPDATE FileList set title='${req.body.title}', content='${req.body.content}' where id='${req.body.id}'`;
+    const query = `UPDATE agentlists set title='${req.body.title}', content='${req.body.content}' where id='${req.body.id}'`;
     connection.query(query, function(error, results, fields) {
         if(error){
             next(error)
@@ -73,7 +76,7 @@ app.post('/updateFile', function(req, res, next) {
 
 // 删除文章
 app.post("/delFile", function(req, res, next) {
-    const query = `DELETE from FileList where id='${req.body.id}'`;
+    const query = `DELETE from agentlists where id='${req.body.id}'`;
     connection.query(query, function(error, results, fields) {
         if(error){
             next(error)

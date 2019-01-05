@@ -4,7 +4,7 @@ import axios from 'axios'
 import qs from 'qs';
 
 class CreateStore {
-    @observable agentList = [];
+    @observable isSave = false;
 
     @action saveFile = async(fileData, callback) => {
         await axios.post(API.addFile, qs.stringify(fileData),{
@@ -13,6 +13,7 @@ class CreateStore {
             }
           })
             .then((res) => {
+                this.isSave = true;
                 callback();
             })
     }
@@ -27,6 +28,15 @@ class CreateStore {
                 callback();
             })
     }
+
+    @action cancelFile = () => {
+        this.isSave = true;
+    }
+
+    @action reset() {
+        this.isSave = false;
+    }
+
 }
 
 export const createStore = new CreateStore();
