@@ -96,7 +96,7 @@ class SideMenu extends Component {
             sideList,
             loadSideMenu
         } = this.props.sideMenuStore;
-        const disabled = window.location.hash.indexOf("create") > -1 || window.location.hash.indexOf("modify") > -1;
+        const disabled = window.location.hash.indexOf("create") > -1 || window.location.hash.indexOf("edit") > -1;
         return (
             <Sider id="side">
                 <h2>采集代理文件管理</h2>
