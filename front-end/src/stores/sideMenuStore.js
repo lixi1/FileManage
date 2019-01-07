@@ -2,6 +2,7 @@ import { observable, action, toJS} from 'mobx';
 import API from './api'
 import axios from 'axios';
 import qs from 'qs';
+import {message} from 'antd'
 
 class SideMenuStore {
     @observable sideList = [];
@@ -49,6 +50,7 @@ class SideMenuStore {
             }
         })
             .then((res) => {
+                message.success("删除成功！");
                 this.loadSideMenu()
             })
     }

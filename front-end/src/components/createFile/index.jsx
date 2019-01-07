@@ -31,8 +31,13 @@ export default class CreateFile extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
+        this.props.router.setRouteLeaveHook(
+            this.props.route, 
+            this.routerWillLeave
+        )
         this.props.createStore.reset();
+        this.props.detailStore.reset();
         const {
             detailContent
         } = this.props.detailStore
@@ -46,16 +51,12 @@ export default class CreateFile extends Component {
         }
     }
 
-    componentDidMount() {
-        this.props.router.setRouteLeaveHook(
-            this.props.route, 
-            this.routerWillLeave
-        )
-    }
     routerWillLeave = () => {
         if(!this.props.createStore.isSave){
+            this.props.detailStore.reset();
             return "编辑的内容还没有保存, 确认要离开？";
         }
+
     }
 
     handleSubmit = (event) => {
@@ -81,30 +82,35 @@ export default class CreateFile extends Component {
             detailContent
         } = this.props.detailStore;
         this.props.createStore.cancelFile();
-        this.props.router.push(detailContent ? `/detail/${detailContent.id}` : "/");
+        this.props.router.push(detailContent.id ? `/detail/${detailContent.id}` : "/");
     }
 
     // ctr + s时调用
     submitContent = (data) => {
         const {
             router,
-            detailContent,
             form,
             createStore,
             sideMenuStore
         } = this.props;
 
+        const {detailContent} = this.props.detailStore;
+
         const callback = () => {
             sideMenuStore.loadSideMenu();
-            router.push(detailContent ? `/detail/${detailContent.id}` : "/");
+            router.push(detailContent.id ? `/detail/${detailContent.id}` : "/");
         }
 
         const submitData = {
             title: form.getFieldValue("title"),
             content: form.getFieldValue("content").toHTML(),
-            id: detailContent ? detailContent.id : null
+            id: detailContent.id ? detailContent.id : null
         }
-        detailContent ? createStore.updateFile(submitData, callback) : createStore.saveFile(submitData, callback)
+        detailContent.id ? createStore.updateFile(submitData, callback) : createStore.saveFile(submitData, callback)
+    }
+
+    componentWillUnmount() {
+        this.props.detailStore.reset();
     }
 
     render() {

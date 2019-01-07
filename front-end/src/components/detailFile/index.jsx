@@ -48,7 +48,7 @@ class DetailFile extends Component {
     }
 
     componentWillUnmount() {
-
+        this.props.detailStore.reset();
     }
 
     render() {

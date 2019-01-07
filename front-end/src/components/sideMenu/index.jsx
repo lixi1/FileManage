@@ -10,7 +10,7 @@ import './index.less'
 
 const TreeNode = Tree.TreeNode;
 @withRouter
-@inject("sideMenuStore")
+@inject("sideMenuStore", "createStore")
 @observer
 class SideMenu extends Component {
     constructor(props) {
@@ -58,6 +58,7 @@ class SideMenu extends Component {
                     const title = (
                         <div>
                             <span onClick={event => {
+                                !item.children && 
                                 this.props.router.push(`/detail/${item.id}`)
                             }}>{item.title}</span>
                             {/* <div className="btnGroup">
@@ -95,13 +96,14 @@ class SideMenu extends Component {
             sideList,
             loadSideMenu
         } = this.props.sideMenuStore;
+        const disabled = window.location.hash.indexOf("create") > -1 || window.location.hash.indexOf("modify") > -1;
         return (
             <Sider id="side">
                 <h2>采集代理文件管理</h2>
                 <p>页面树结构</p>
                 <Button type="primary" onClick={() => {
                     this.props.router.push('/create');
-                }}>新建文件</Button>
+                }} disabled={disabled}>新建文件</Button>
                 <Tree>
                     {
                         this.renderTreeNodes(sideList)}

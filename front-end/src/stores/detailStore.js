@@ -23,6 +23,13 @@ class DetailStore {
             // this.content = BraftEditor.createEditorState(result.data[0].content);
         })
     }
+
+    reset() {
+        this.detailContent = {
+            title: "",
+            content: null
+        }
+    }
 }
 
 export const detailStore = new DetailStore();

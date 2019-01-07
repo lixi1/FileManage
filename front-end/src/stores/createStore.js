@@ -2,6 +2,7 @@ import { observable, action } from 'mobx';
 import API from './api'
 import axios from 'axios'
 import qs from 'qs';
+import {message} from 'antd';
 
 class CreateStore {
     @observable isSave = false;
@@ -14,6 +15,7 @@ class CreateStore {
           })
             .then((res) => {
                 this.isSave = true;
+                message.success("添加成功！")
                 callback();
             })
     }
@@ -25,6 +27,8 @@ class CreateStore {
             }
           })
             .then((res) => {
+                this.isSave = true;
+                message.success("编辑成功！")
                 callback();
             })
     }
