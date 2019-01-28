@@ -57,7 +57,7 @@ class SideMenu extends Component {
         return  data.map((item, index) => {
                     const title = (
                         <div>
-                            <span onClick={event => {
+                            <span className="title" title={item.title} onClick={event => {
                                 !item.children && 
                                 this.props.router.push(`/detail/${item.id}`)
                             }}>{item.title}</span>
