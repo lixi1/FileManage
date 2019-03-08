@@ -84,8 +84,6 @@ class DetailFile extends Component {
                             })
                         }}>删除</Button>
                     </div>
-                    
-
                 </Header>
                 <Content>
                     <div dangerouslySetInnerHTML={{__html: detailContent.content}}></div>
